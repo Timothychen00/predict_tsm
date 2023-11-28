@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Title</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS v5.2.1 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+
+</head>
+
+<body>
+
+    <div class="container-fluid">
+        <div class="row">
+            <canvas id="myChart" width="600" heigth='600' style="width: 800px!important;"></canvas>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+
+        function render_chart(received_data) {
+            const ctx = document.getElementById('myChart');
+            const data = [];
+            const data2 = [];
+            let prev = 100;
+            let prev2 = 80;
+            for (let i = 0; i < 1000; i++) {
+                prev += 5 - Math.random() * 10;
+                data.push({ x: i, y: prev });
+                prev2 += 5 - Math.random() * 10;
+                data2.push({ x: i, y: prev2 });
+            }
+
+            const totalDuration = 5000;
+            const delayBetweenPoints = totalDuration / data.length;
+            const previousY = (ctx) => ctx.index === 0 ? ctx.chart.scales.y.getPixelForValue(100) : ctx.chart.getDatasetMeta(ctx.datasetIndex).data[ctx.index - 1].getProps(['y'], true).y;
+            const animation = {
+                x: {
+                    type: 'number',
+                    easing: 'linear',
+                    duration: delayBetweenPoints,
+                    from: NaN, // the point is initially skipped
+                    delay(ctx) {
+                        if (ctx.type !== 'data' || ctx.xStarted) {
+                            return 0;
+                        }
+                        ctx.xStarted = true;
+                        return ctx.index * delayBetweenPoints;
+                    }
+                },
+                y: {
+                    type: 'number',
+                    easing: 'linear',
+                    duration: delayBetweenPoints,
+                    from: previousY,
+                    delay(ctx) {
+                        if (ctx.type !== 'data' || ctx.yStarted) {
+                            return 0;
+                        }
+                        ctx.yStarted = true;
+                        return ctx.index * delayBetweenPoints;
+                    }
+                }
+            };
+
+            var myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    datasets: [{
+                        borderColor: 'rgb(255, 99, 132)',
+                        borderWidth: 1,
+                        radius: 0,
+                        data: data,
+                    },
+                    {
+                        borderColor: 'rgb(54, 162, 235)',
+                        borderWidth: 1,
+                        radius: 0,
+                        data: data2,
+                    }]
+                },
+                options: {
+                    animation,
+                    interaction: {
+                        intersect: false
+                    },
+                    plugins: {
+                        legend: false
+                    },
+                    scales: {
+                        x: {
+                            type: 'linear'
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+    <script src="/static/js/ajax.js"></script>
+
+    <!-- Bootstrap JavaScript Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+        integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous">
+        </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
+        integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous">
+        </script>
+</body>
+
+</html>
