@@ -15,26 +15,28 @@
 
 <body>
 
-    <div class="container-fluid">
-        <div class="row">
-            <canvas id="myChart" width="600" heigth='600' style="width: 800px!important;"></canvas>
+    <div class="container-fluid pt-5">
+        <div class="row justify-content-center mt-5 pt-5">
+            <div class="col-8">
+                <canvas id="myChart" width="600" heigth='600' style="width: 800px!important;"></canvas>
+            </div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/static/js/ajax.js"></script>
     <script>
 
         function render_chart(received_data) {
+            // console.log(received_data['data']) 
             const ctx = document.getElementById('myChart');
             const data = [];
             const data2 = [];
             let prev = 100;
             let prev2 = 80;
-            for (let i = 0; i < 1000; i++) {
-                prev += 5 - Math.random() * 10;
-                data.push({ x: i, y: prev });
-                prev2 += 5 - Math.random() * 10;
-                data2.push({ x: i, y: prev2 });
+            for (let i = 0; i < received_data[0].length; i++) {
+                data.push({ x: i, y: received_data[0][i] });
+                data2.push({ x: i, y: received_data[1][i] });
             }
 
             const totalDuration = 5000;
@@ -73,17 +75,20 @@
                 type: 'line',
                 data: {
                     datasets: [{
+                        label:'predicted',
                         borderColor: 'rgb(255, 99, 132)',
-                        borderWidth: 1,
+                        borderWidth: 3,
                         radius: 0,
                         data: data,
                     },
                     {
+                        label:'real-price',
                         borderColor: 'rgb(54, 162, 235)',
-                        borderWidth: 1,
+                        borderWidth: 3,
                         radius: 0,
                         data: data2,
-                    }]
+                    }],
+                    labels: received_data[2]
                 },
                 options: {
                     animation,
@@ -95,14 +100,21 @@
                     },
                     scales: {
                         x: {
-                            type: 'linear'
+                            type: 'category',
+                            labels: received_data[2]
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: '股價'
+                            }
                         }
                     }
                 }
             });
         }
     </script>
-    <script src="/static/js/ajax.js"></script>
+
 
     <!-- Bootstrap JavaScript Libraries -->
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"

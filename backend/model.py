@@ -23,6 +23,7 @@ from sklearn.preprocessing import MinMaxScaler
 
 mode='tranning'
 
+result=[]
 tsm = yf.Ticker('2330.tw')
 tsla = yf.Ticker('TSLA')
 
@@ -30,7 +31,6 @@ yf.download('TSM TSLA',start='2016-01-01',end='2022-01-01')#過去的資料也�
 data_set=yf.download('2330.tw',start='2016-01-01',end='2022-01-01')
 #data_set
 
-# dataset_train= pd.read_csv('Google_Stock_Price_Train.csv')
 dataset_train= data_set
 training_set = dataset_train.iloc[:, 1:2].values  # 取「Open」欄位值
 
@@ -102,38 +102,52 @@ else:
 
 
 def predict(mode='data'):
-    global dataset_test,real_stock_price,test_x,test_y,predicted_stock_price,score
+    
+    global dataset_test,real_stock_price,test_x,test_y,predicted_stock_price,score,result
 # X_train = np.reshape(X_train, (X_train.shape[0], X_train.shape[1], 1))
-    dataset_test=yf.download('2330.tw',start='2022-01-02',end='2023-11-23')
-    real_stock_price = dataset_test.iloc[:, 1:2].values
+    if not result:
+        dataset_test=yf.download('2330.tw',start='2022-01-02',end='2023-11-23')
+        real_stock_price = dataset_test.iloc[:, 1:2].values
 
-    test_x,test_y=processing_data(dataset_test,'test')
+        test_x,test_y=processing_data(dataset_test,'test')
 
-    predicted_stock_price = regressor.predict(test_x)
-    predicted_stock_price = sc.inverse_transform(predicted_stock_price)  # to get the original scale
+        predicted_stock_price = regressor.predict(test_x)
+        predicted_stock_price = sc.inverse_transform(predicted_stock_price)  # to get the original scale
 
-    np.shape(predicted_stock_price)
+        np.shape(predicted_stock_price)
 
-    if(mode!='data'):
-        plt.plot(real_stock_price, color = 'red', label = 'Real TSM Price')  # 紅線表示真實股價
-        plt.plot(predicted_stock_price, color = 'blue', label = 'TSM Price')  # 藍線表示預測股價
+        if(mode!='data'):
+            plt.plot(real_stock_price, color = 'red', label = 'Real TSM Price')  # 紅線表示真實股價
+            plt.plot(predicted_stock_price, color = 'blue', label = 'TSM Price')  # 藍線表示預測股價
 
-        plt.title('TSM Price Prediction')
-        plt.xlabel('Time')
-        plt.ylabel('TSM Price')
-        plt.legend()
-        plt.show()
+            plt.title('TSM Price Prediction')
+            plt.xlabel('Time')
+            plt.ylabel('TSM Price')
+            plt.legend()
+            plt.show()
 
-        plt.plot(real_stock_price-predicted_stock_price, color = 'blue', label = 'err')  # 藍線表示預測股價
-        plt.show()
+            plt.plot(real_stock_price-predicted_stock_price, color = 'blue', label = 'err')  # 藍線表示預測股價
+            plt.show()
 
-    score = regressor.evaluate(test_x,test_y,verbose='2')
-    score
+        score = regressor.evaluate(test_x,test_y,verbose='2')
+        score
 
-    sum(real_stock_price-predicted_stock_price)/485
-    # print(real_stock_price.tolist())
-    # print(predicted_stock_price.tolist())
-    return predicted_stock_price.tolist(),real_stock_price.tolist()
+        sum(real_stock_price-predicted_stock_price)/485
+        # print(real_stock_price.tolist())
+        # print(predicted_stock_price.tolist())
+        
+        #output date
+        print(len(predicted_stock_price.tolist()))
+        date=dataset_test.index.tolist()
+
+        for col in range(len(date)):
+            date[col]= dataset_test.index[col].strftime('%Y/%m/%d')
+        # print(date)
+        # print(len(date))
+        # print(len(predicted_stock_price.tolist()))
+        result=predicted_stock_price.tolist(),real_stock_price.tolist(),date
+
+    return result
 
 if __name__=='__main__':
     predict(mode='auto')

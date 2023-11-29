@@ -16,13 +16,9 @@ api=Api(app)
 
 api.add_resource(BasicAPI,'/get_api')
 
-
-
-
 @app.route('/')
 def home():
     return '1'
-
 
 if __name__=='__main__':
     app.run(debug=True,port=5600)
