@@ -37,10 +37,8 @@ def processing_data(dataset,mode='train'):
   print(training_set)
   data_set_scaled = sc.fit_transform(training_set)
   if mode=='train':
-
-    
-
     for i in range(60, 1461):  # 1258 是訓練集總數
+        #1461
         X.append(data_set_scaled[i-60:i, 0])
         y.append(data_set_scaled[i, 0])
 
@@ -96,7 +94,7 @@ else:
 def predict(mode='data'):
     
     global dataset_test,real_stock_price,test_x,test_y,predicted_stock_price,score,result
-# X_train = np.reshape(X_train, (X_train.shape[0], X_train.shape[1], 1))
+    # X_train = np.reshape(X_train, (X_train.shape[0], X_train.shape[1], 1))
     if not result:
         dataset_test=yf.download('2330.tw',start='2022-01-02',end='2023-11-23',interval='1d')
         real_stock_price = dataset_test.iloc[:, 1:2].values
@@ -122,7 +120,6 @@ def predict(mode='data'):
             plt.show()
 
         score = regressor.evaluate(test_x,test_y,verbose='2')
-        score
         print('score',score)
         print('avr',sum(real_stock_price-predicted_stock_price)/485)
         

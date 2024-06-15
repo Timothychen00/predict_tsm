@@ -4,9 +4,9 @@ function get_data(){
     .then((res)=>{
         // console.log(res);
         res=res['data']
-        res[0]=res[0]
-        res[1]=res[1]
-        res[2]=res[2]
+        // res[0]=res[0]
+        // res[1]=res[1]
+        // res[2]=res[2]
         console.log(res[2])
         // 
         render_chart(res);
